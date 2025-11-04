@@ -1,4 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+  margin: 0;
+  padding: 0;
+}
+
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
+/* Override Material theme colors for wedding theme (purple/pink) */
+.mat-mdc-raised-button.mat-primary {
+  --mdc-filled-button-container-color: #9c27b0;
+  --mdc-filled-button-label-text-color: #fff;
+}
+
+.mat-mdc-form-field.mat-primary .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
+  color: #9c27b0;
+}
+
+.mat-mdc-form-field.mat-primary .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-line-ripple::after {
+  border-color: #9c27b0;
+}
