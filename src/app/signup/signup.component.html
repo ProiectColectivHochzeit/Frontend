@@ -13,11 +13,12 @@
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email" placeholder="Enter your email">
         <mat-icon matPrefix>email</mat-icon>
-        <mat-error *ngIf="signupForm.get('email')?.hasError('required') && signupForm.get('email')?.touched">
-          Email is required
-        </mat-error>
-        <mat-error *ngIf="signupForm.get('email')?.hasError('email') && signupForm.get('email')?.touched">
-          Please enter a valid email
+        <mat-error>
+          @if (signupForm.get('email')?.hasError('required') && signupForm.get('email')?.touched) {
+            Email is required
+          } @else if (signupForm.get('email')?.hasError('email') && signupForm.get('email')?.touched) {
+            Please enter a valid email
+          }
         </mat-error>
       </mat-form-field>
 
@@ -25,8 +26,10 @@
         <mat-label>First Name</mat-label>
         <input matInput type="text" formControlName="firstName" placeholder="Enter your first name">
         <mat-icon matPrefix>person</mat-icon>
-        <mat-error *ngIf="signupForm.get('firstName')?.hasError('required') && signupForm.get('firstName')?.touched">
-          First name is required
+        <mat-error>
+          @if (signupForm.get('firstName')?.hasError('required') && signupForm.get('firstName')?.touched) {
+            First name is required
+          }
         </mat-error>
       </mat-form-field>
 
@@ -34,8 +37,10 @@
         <mat-label>Last Name</mat-label>
         <input matInput type="text" formControlName="lastName" placeholder="Enter your last name">
         <mat-icon matPrefix>person</mat-icon>
-        <mat-error *ngIf="signupForm.get('lastName')?.hasError('required') && signupForm.get('lastName')?.touched">
-          Last name is required
+        <mat-error>
+          @if (signupForm.get('lastName')?.hasError('required') && signupForm.get('lastName')?.touched) {
+            Last name is required
+          }
         </mat-error>
       </mat-form-field>
 
@@ -56,11 +61,12 @@
           [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
-        <mat-error *ngIf="signupForm.get('password')?.hasError('required') && signupForm.get('password')?.touched">
-          Password is required
-        </mat-error>
-        <mat-error *ngIf="signupForm.get('password')?.hasError('minlength') && signupForm.get('password')?.touched">
-          Password must be at least 6 characters
+        <mat-error>
+          @if (signupForm.get('password')?.hasError('required') && signupForm.get('password')?.touched) {
+            Password is required
+          } @else if (signupForm.get('password')?.hasError('minlength') && signupForm.get('password')?.touched) {
+            Password must be at least 6 characters
+          }
         </mat-error>
       </mat-form-field>
 

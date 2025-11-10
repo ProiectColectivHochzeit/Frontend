@@ -63,6 +63,6 @@ export class LoginComponent implements OnInit {
   }
 
   onForgotPassword() {
-    console.log('Forgot password clicked');
+    //to be implemented
   }
 }

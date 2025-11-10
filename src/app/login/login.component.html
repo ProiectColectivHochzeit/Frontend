@@ -13,11 +13,12 @@
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email" placeholder="Enter your email">
         <mat-icon matPrefix>email</mat-icon>
-        <mat-error *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
-          Email is required
-        </mat-error>
-        <mat-error *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched">
-          Please enter a valid email
+        <mat-error>
+          @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
+            Email is required
+          } @else if (loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
+            Please enter a valid email
+          }
         </mat-error>
       </mat-form-field>
 
@@ -38,11 +39,12 @@
           [attr.aria-pressed]="hidePassword">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
-          Password is required
-        </mat-error>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched">
-          Password must be at least 6 characters
+        <mat-error>
+          @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+            Password is required
+          } @else if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+            Password must be at least 6 characters
+          }
         </mat-error>
       </mat-form-field>
 

@@ -3,8 +3,6 @@ import { AppComponent } from './app/app.component';
 import { provideHttpClient } from '@angular/common/http';
 import { appConfig } from './app/app.config';
 
-console.log('main.ts: Starting Angular bootstrap...');
-
 bootstrapApplication(AppComponent, {
   ...appConfig,
   providers: [
@@ -12,9 +10,7 @@ bootstrapApplication(AppComponent, {
     provideHttpClient()
   ]
 })
-  .then(() => {
-    console.log('SUCCESS: Angular app bootstrapped!');
-  })
+  .then(() => {})
   .catch((err) => {
     console.error('ERROR bootstrapping Angular:', err);
     document.body.innerHTML = `
