@@ -4,55 +4,48 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import {Router, RouterModule} from '@angular/router';
-import {AuthService} from '../services/auth.service';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
+  selector: 'app-signup',
   imports: [
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCheckboxModule,
     MatIconModule,
     RouterModule
   ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  templateUrl: './signup.component.html',
+  styleUrl: './signup.component.scss'
 })
-export class LoginComponent implements OnInit {
-  loginForm!: FormGroup;
+export class SignupComponent implements OnInit {
+  signupForm!: FormGroup;
   hidePassword = true;
 
-
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
-
-  }
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.loginForm = this.fb.group({
+    this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      role: ['PARTICIPANT']
     });
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.authService.login({
-        email: this.loginForm.value.email,
-        password: this.loginForm.value.password
-      }).subscribe({
+    if (this.signupForm.valid) {
+      this.authService.register(this.signupForm.value).subscribe({
         next: () => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/login']);
         },
         error: (err) => {
-          console.error('Login error:', err);
+          console.error('Registration error:', err);
         }
       });
     }
@@ -60,9 +53,5 @@ export class LoginComponent implements OnInit {
 
   togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
-  }
-
-  onForgotPassword() {
-    //to be implemented
   }
 }
