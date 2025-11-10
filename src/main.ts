@@ -1,15 +1,22 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
+import { provideHttpClient } from '@angular/common/http';
+import { appConfig } from './app/app.config';
 
-console.log('🚀 main.ts: Starting Angular bootstrap...');
+console.log('main.ts: Starting Angular bootstrap...');
 
-bootstrapApplication(AppComponent, appConfig)
+bootstrapApplication(AppComponent, {
+  ...appConfig,
+  providers: [
+    ...(appConfig.providers || []),
+    provideHttpClient()
+  ]
+})
   .then(() => {
-    console.log('✅ SUCCESS: Angular app bootstrapped!');
+    console.log('SUCCESS: Angular app bootstrapped!');
   })
   .catch((err) => {
-    console.error('❌ ERROR bootstrapping Angular:', err);
+    console.error('ERROR bootstrapping Angular:', err);
     document.body.innerHTML = `
       <div style="padding: 50px; background: #ffebee; border: 2px solid #c62828; color: #c62828;">
         <h1>Angular Bootstrap Error</h1>

@@ -6,7 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,24 +29,32 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   hidePassword = true;
 
-  constructor(private fb: FormBuilder) {
-    console.log('✅ LoginComponent: Constructor called');
+
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+
   }
 
   ngOnInit() {
-    console.log('✅ LoginComponent: ngOnInit called');
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
-    console.log('✅ LoginComponent: Form created', this.loginForm);
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log('✅ Login submitted:', this.loginForm.value);
-      // Handle login logic here
+      this.authService.login({
+        email: this.loginForm.value.email,
+        password: this.loginForm.value.password
+      }).subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          console.error('Login error:', err);
+        }
+      });
     }
   }
 
@@ -55,6 +64,5 @@ export class LoginComponent implements OnInit {
 
   onForgotPassword() {
     console.log('Forgot password clicked');
-    // Handle forgot password logic here
   }
 }
