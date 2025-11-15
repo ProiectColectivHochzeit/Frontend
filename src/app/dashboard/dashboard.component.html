@@ -1,0 +1,117 @@
+<div class="main-layout">
+  <aside class="sidebar">
+    <header class="sidebar-header">
+      <mat-icon class="portal-icon">home</mat-icon>
+      <div>
+        <p class="portal-title">Event Manager</p>
+        <p class="portal-subtitle">Wedding Portal</p>
+      </div>
+    </header>
+    <nav class="sidebar-nav">
+      <button class="nav-button active" routerLink="/">
+        <mat-icon>event</mat-icon>
+        Event Details
+      </button>
+      <button class="nav-button" routerLink="/my-events">
+        <mat-icon>calendar_month</mat-icon>
+        My Events
+      </button>
+      <button class="nav-button" routerLink="/photo-gallery">
+        <mat-icon>photo_library</mat-icon>
+        Photo Gallery
+      </button>
+      <button class="nav-button" routerLink="/guest-list">
+        <mat-icon>groups</mat-icon>
+        Guest List
+      </button>
+      <button class="nav-button" routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        Settings
+      </button>
+    </nav>
+    <footer class="sidebar-footer">
+      <div class="user-info">
+        <span class="user-initials">JD</span>
+        <div class="user-text">
+          <p class="user-name">Jane Doe</p>
+          <p class="user-role">Participant</p>
+        </div>
+      </div>
+      <button class="sign-out-button">
+        <mat-icon>logout</mat-icon>
+        <span>Sign Out</span>
+      </button>
+    </footer>
+  </aside>
+
+  <main class="dashboard-container">
+    <div class="event-details-card">
+      <div class="event-details-content">
+        <div class="event-image-wrapper">
+          <img src="pozaDashboard.jpg" alt="Couple holding bouquet" class="event-image">
+        </div>
+        <div class="event-info">
+          <h2 class="event-title">Sarah & Michael Wedding</h2>
+          <p class="event-description">Join us for a celebration of love and happiness as we exchange our vows and begin our journey together.</p>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <mat-icon class="detail-icon">calendar_today</mat-icon>
+              <div class="detail-text">
+                <p class="detail-label">Date</p>
+                <p class="detail-value">Sunday, June 15, 2025</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <mat-icon class="detail-icon">schedule</mat-icon>
+              <div class="detail-text">
+                <p class="detail-label">Time</p>
+                <p class="detail-value">14:00 - 23:00</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <mat-icon class="detail-icon">location_on</mat-icon>
+              <div class="detail-text">
+                <p class="detail-label">Location</p>
+                <p class="detail-value">Grand Estate Hall, 123 Wedding Lane, Vienna</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <mat-icon class="detail-icon">people</mat-icon>
+              <div class="detail-text">
+                <p class="detail-label">Guests</p>
+                <p class="detail-value">120 invited</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="rsvp-status">
+            <p>Your RSVP Status</p>
+            <div class="status-actions">
+              <span class="status-badge"><mat-icon>check</mat-icon> Attending</span>
+              <a href="#" class="change-rsvp-link">Change RSVP</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-access-grid">
+      <div class="quick-access-card upload-photos" routerLink="/photo-gallery">
+        <mat-icon class="card-icon">upload</mat-icon>
+        <h3>Upload Photos</h3>
+        <p>Share your memories from the event</p>
+      </div>
+      <div class="quick-access-card view-gallery" routerLink="/photo-gallery">
+        <mat-icon class="card-icon">photo_library</mat-icon>
+        <h3>View Gallery</h3>
+        <p>Browse photos from other guests</p>
+      </div>
+      <div class="quick-access-card guest-list" routerLink="/guest-list">
+        <mat-icon class="card-icon">groups</mat-icon>
+        <h3>Guest List</h3>
+        <p>See who else is attending</p>
+      </div>
+    </div>
+  </main>
+</div>

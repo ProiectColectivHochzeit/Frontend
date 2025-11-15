@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router'; // <-- New import
-import { LoginComponent } from './login/login.component'; // Keep, but no longer in template
+import { RouterOutlet } from '@angular/router'; 
+import { LoginComponent } from './login/login.component'; 
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, LoginComponent], // <-- Changed to use RouterOutlet
-  template: `
-    <router-outlet></router-outlet>
-  `, // <-- Changed to use router outlet
-  styles: []
+ selector: 'app-root',
+ standalone: true,
+ imports: [RouterOutlet, LoginComponent],
+ template: `
+  <router-outlet></router-outlet>
+ `, 
+ styles: []
 })
 export class AppComponent {
-  title = 'Wedding Events';
-  
-  constructor() {
-    console.log('✅ AppComponent constructor called');
-  }
+ title = 'Wedding Events';
+ 
+ constructor() {
+      console.log('✅ AppComponent constructor called');
+ }
 }

@@ -1,0 +1,71 @@
+<div class="main-layout">
+  <aside class="sidebar">
+    <header class="sidebar-header">
+      <mat-icon class="portal-icon">home</mat-icon>
+      <div>
+        <p class="portal-title">Event Manager</p>
+        <p class="portal-subtitle">Wedding Portal</p>
+      </div>
+    </header>
+    <nav class="sidebar-nav">
+      <button class="nav-button" routerLink="/">
+        <mat-icon>event</mat-icon>
+        Event Details
+      </button>
+      <button class="nav-button" routerLink="/my-events">
+        <mat-icon>calendar_month</mat-icon>
+        My Events
+      </button>
+      <button class="nav-button active" routerLink="/photo-gallery">
+        <mat-icon>photo_library</mat-icon>
+        Photo Gallery
+      </button>
+      <button class="nav-button" routerLink="/guest-list">
+        <mat-icon>groups</mat-icon>
+        Guest List
+      </button>
+      <button class="nav-button" routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        Settings
+      </button>
+    </nav>
+    <footer class="sidebar-footer">
+      <div class="user-info">
+        <span class="user-initials">JD</span>
+        <div class="user-text">
+          <p class="user-name">Jane Doe</p>
+          <p class="user-role">Participant</p>
+        </div>
+      </div>
+      <button class="sign-out-button">
+        <mat-icon>logout</mat-icon>
+        Sign Out
+      </button>
+    </footer>
+  </aside>
+
+  <main class="gallery-container">
+    <div class="gallery-header">
+      <h1 class="page-title">Photo Gallery</h1>
+      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+    </div>
+
+    <div class="gallery-grid">
+      @for (photo of photos; track photo.id) {
+        <div class="photo-card">
+          <img [src]="photo.imageUrl" alt="Wedding Photo" class="photo-image">
+          <div class="photo-details">
+            <p class="uploader-name">{{ photo.uploader }}</p>
+            <p class="upload-time">{{ photo.time }}</p>
+            <div class="actions">
+              <span class="likes">
+                <mat-icon class="like-icon">favorite</mat-icon> {{ photo.likes }}
+              </span>
+              <mat-icon class="download-icon">file_download</mat-icon>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>
