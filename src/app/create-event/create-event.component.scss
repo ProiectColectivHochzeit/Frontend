@@ -1,0 +1,95 @@
+$primary-color: #764ba2;
+$secondary-color: #9c27b0;
+$background-gradient: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%);
+$sidebar-bg: linear-gradient(180deg, $primary-color 0%, #667eea 100%);
+$active-nav-bg: #fff;
+$active-nav-color: $primary-color;
+$text-color: #333;
+$fade-text-color: #64748b;
+
+:host {
+  display: block;
+}
+
+.create-event-card {
+  width: 100%;
+  max-width: 45rem;
+  background: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 0.9375rem 2.5rem rgba(0, 0, 0, 0.08);
+  padding: 1.75rem 2rem;
+  margin-top: 6rem;
+  margin-left: 12rem;
+}
+
+.card-header {
+  margin-bottom: 1.25rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-color;
+  }
+
+  p {
+    margin: 0.25rem 0 0 0;
+    color: $fade-text-color;
+    font-size: 0.875rem;
+  }
+}
+
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-color;
+  }
+
+  input,
+  textarea {
+    border-radius: 0.625rem;
+    border: 0.0625rem solid #e5e7eb;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: inherit;
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 0.1875rem rgba(118, 75, 162, 0.15);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.two-columns {
+  flex-direction: row;
+  gap: 1rem;
+
+  > div {
+    flex: 1;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
