@@ -37,4 +37,21 @@ export class EventService {
       headers
     });
   }
+
+  createEvent(eventData: any): Observable<EventResponseDTO> {
+    const userId = this.authService.getCurrentUserId();
+    const token = this.authService.getToken();
+
+    if (!userId) {
+      throw new Error('User not logged in or userId missing in token.');
+    }
+
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.http.post<EventResponseDTO>(this.baseUrl, eventData, { headers });
+
+  }
 }
