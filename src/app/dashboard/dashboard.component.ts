@@ -34,4 +34,8 @@ export class DashboardComponent implements OnInit {
   goToCreateEvent() {
     this.router.navigate(['/create-event']);
   }
+
+  goToGuestList() {
+    this.router.navigate(['/guest-list']);
+  }
 }
