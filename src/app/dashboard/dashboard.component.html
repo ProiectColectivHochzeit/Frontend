@@ -1,46 +1,59 @@
 <div class="home-container">
   <section class="hero-card">
     <div class="hero-text">
-      <p class="hero-tagline">Welcome to your wedding portal</p>
-      <h1 class="hero-title">Hello, {{ userName }} 💍</h1>
+      <div class="tagline-wrapper">
+        <mat-icon class="tagline-icon">favorite</mat-icon>
+        <p class="hero-tagline">Welcome to your wedding portal</p>
+      </div>
+      <h1 class="hero-title">Hello, {{ userName }}</h1>
       <p class="hero-subtitle">
-        Plan, organize, and enjoy your special events in one beautiful place.
+        Plan, organize, and celebrate your special moments with elegance and ease. 
+        Everything you need for your perfect day, all in one place.
       </p>
 
       <div class="hero-actions">
-        <button mat-raised-button color="primary" (click)="goToMyEvents()">
+        <button mat-raised-button color="primary" (click)="goToMyEvents()" class="primary-action">
           <mat-icon>calendar_month</mat-icon>
-          Go to My Events
+          <span>My Events</span>
         </button>
-        <button mat-stroked-button color="primary" (click)="goToCreateEvent()">
-          <mat-icon>add</mat-icon>
-          Create New Event
+        <button mat-stroked-button (click)="goToCreateEvent()" class="secondary-action">
+          <mat-icon>add_circle_outline</mat-icon>
+          <span>Create Event</span>
         </button>
       </div>
 
-      <ul class="hero-highlights">
-        <li>
-          <mat-icon>favorite</mat-icon>
-          Keep all your wedding events in one place.
-        </li>
-        <li>
-          <mat-icon>groups</mat-icon>
-          Coordinate with guests and family.
-        </li>
-        <li>
-          <mat-icon>photo_camera</mat-icon>
-          Photo galleries & guest lists per event.
-        </li>
-      </ul>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>event_available</mat-icon>
+          </div>
+          <div class="feature-content">
+            <h3>Centralized Planning</h3>
+            <p>Keep all events organized</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>photo_library</mat-icon>
+          </div>
+          <div class="feature-content">
+            <h3>Photo Galleries</h3>
+            <p>Cherish every moment</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="hero-illustration">
-      <img
-        src="home-illustration.jpg"
-        alt="Wedding illustration"
-        class="hero-image"
-      />
+      <div class="illustration-wrapper">
+        <img
+          src="pozaDashboard.jpg"
+          alt="Wedding celebration"
+          class="hero-image"
+        />
+        <div class="decoration-circle circle-1"></div>
+        <div class="decoration-circle circle-2"></div>
+      </div>
     </div>
   </section>
-
 </div>
