@@ -1,92 +1,105 @@
-<div class="main-layout">
-  <aside class="sidebar">
-    <header class="sidebar-header">
-      <mat-icon class="portal-icon">home</mat-icon>
-      <div>
-        <p class="portal-title">Event Manager</p>
-        <p class="portal-subtitle">Wedding Portal</p>
-      </div>
-    </header>
-    <nav class="sidebar-nav">
-      <button class="nav-button" routerLink="/">
-        <mat-icon>event</mat-icon>
-        Event Details
-      </button>
-      <button class="nav-button" routerLink="/my-events">
-        <mat-icon>calendar_month</mat-icon>
-        My Events
-      </button>
-      <button class="nav-button" routerLink="/photo-gallery">
-        <mat-icon>photo_library</mat-icon>
-        Photo Gallery
-      </button>
-      <button class="nav-button active" routerLink="/guest-list">
-        <mat-icon>groups</mat-icon>
-        Guest List
-      </button>
-      <button class="nav-button" routerLink="/settings">
-        <mat-icon>settings</mat-icon>
-        Settings
-      </button>
-    </nav>
-    <footer class="sidebar-footer">
-      <div class="user-info">
-        <span class="user-initials">JD</span>
-        <div class="user-text">
-          <p class="user-name">Jane Doe</p>
-          <p class="user-role">Participant</p>
-        </div>
-      </div>
-      <button class="sign-out-button">
-        <mat-icon>logout</mat-icon>
-        Sign Out
-      </button>
-    </footer>
-  </aside>
-
-  <main class="guest-list-container">
+<div class="guest-list-wrapper">
+  <div class="guest-list-container">
+    
     <div class="summary-grid">
       <div class="summary-card total">
-        <p>Total Guests</p>
-        <h2>{{ totalGuests }}</h2>
+        <div class="card-icon-wrapper total-bg">
+          <mat-icon>groups</mat-icon>
+        </div>
+        <div class="card-content">
+          <p class="card-label">Total Guests</p>
+          <h2 class="card-value">{{ totalGuests }}</h2>
+        </div>
       </div>
+      
       <div class="summary-card confirmed">
-        <p>Confirmed</p>
-        <h2>{{ confirmedCount }}</h2>
+        <div class="card-icon-wrapper confirmed-bg">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="card-content">
+          <p class="card-label">Confirmed</p>
+          <h2 class="card-value">{{ confirmedCount }}</h2>
+        </div>
       </div>
+      
       <div class="summary-card pending">
-        <p>Pending</p>
-        <h2>{{ pendingCount }}</h2>
+        <div class="card-icon-wrapper pending-bg">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="card-content">
+          <p class="card-label">Pending</p>
+          <h2 class="card-value">{{ pendingCount }}</h2>
+        </div>
+      </div>
+
+      <div class="summary-card declined">
+        <div class="card-icon-wrapper declined-bg">
+          <mat-icon>cancel</mat-icon>
+        </div>
+        <div class="card-content">
+          <p class="card-label">Declined</p>
+          <h2 class="card-value">{{ declinedCount }}</h2>
+        </div>
       </div>
     </div>
 
+    <!-- Guest List Card -->
     <div class="guest-list-card">
       <div class="list-header">
-        <h2>RSVP Tracking</h2>
-        <mat-icon class="add-icon">add_circle_outline</mat-icon>
+        <div class="header-content">
+          <div class="header-icon-wrapper">
+            <mat-icon>fact_check</mat-icon>
+          </div>
+          <div>
+            <h2>Confirmations</h2>
+            <p>Manage your guest list and track responses</p>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" class="add-guest-btn">
+          <mat-icon>person_add</mat-icon>
+          <span>Add Guest</span>
+        </button>
       </div>
       
       <div class="guest-item-list">
         @for (guest of guests; track guest.email) {
           <div class="guest-item">
             <div class="guest-info">
-              <span class="guest-initials">{{ guest.initials }}</span>
-              <div class="name-email">
+              <div class="guest-avatar" [style.background]="getAvatarColor(guest.initials)">
+                <span>{{ guest.initials }}</span>
+              </div>
+              <div class="guest-details">
                 <p class="guest-name">{{ guest.name }}</p>
                 <p class="guest-email">{{ guest.email }}</p>
               </div>
             </div>
+            
             <div class="guest-status-wrapper">
               @if (guest.plusOne) {
-                <span class="plus-one-badge">+1</span>
+                <span class="plus-one-badge">
+                  <mat-icon>person_add</mat-icon>
+                  <span>+1</span>
+                </span>
               }
-              <span [class]="'status-badge ' + guest.status.toLowerCase()">
-                {{ guest.status }}
+              <span [class]="'status-badge status-' + guest.status.toLowerCase()">
+                <mat-icon class="status-icon">
+                  {{ getStatusIcon(guest.status) }}
+                </mat-icon>
+                <span>{{ guest.status }}</span>
               </span>
             </div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <mat-icon>person_off</mat-icon>
+            <p>No guests yet</p>
+            <button mat-raised-button color="primary">
+              <mat-icon>add</mat-icon>
+              Add Your First Guest
+            </button>
           </div>
         }
       </div>
     </div>
-  </main>
+  </div>
 </div>
