@@ -1,0 +1,121 @@
+<div class="create-event-wrapper">
+  <div class="create-event-card">
+    <div class="card-header">
+      <div class="header-content">
+        <div class="icon-wrapper">
+          <mat-icon>celebration</mat-icon>
+        </div>
+        <div>
+          <h2>Create New Event</h2>
+          <p>Fill in the details below to create your special event</p>
+        </div>
+      </div>
+    </div>
+
+    <form #eventForm="ngForm" (ngSubmit)="onSubmit(eventForm)" class="event-form">
+
+      <div class="form-row">
+        <label for="name">
+          Event Name
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <mat-icon class="input-icon">event</mat-icon>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            ngModel
+            placeholder="e.g. Sarah & Michael's Wedding"
+            #nameInput="ngModel"
+            [class.invalid]="nameInput.invalid && nameInput.touched"
+          />
+        </div>
+        <span class="error-message" *ngIf="nameInput.invalid && nameInput.touched">
+          Event name is required
+        </span>
+      </div>
+
+      <div class="form-row two-columns">
+        <div class="column">
+          <label for="start">
+            Start Date
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <mat-icon class="input-icon">today</mat-icon>
+            <input
+              id="start"
+              name="startingDate"
+              type="date"
+              required
+              ngModel
+              #startInput="ngModel"
+              [class.invalid]="startInput.invalid && startInput.touched"
+            />
+          </div>
+          <span class="error-message" *ngIf="startInput.invalid && startInput.touched">
+            Start date is required
+          </span>
+        </div>
+        <div class="column">
+          <label for="end">
+            End Date
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <mat-icon class="input-icon">event</mat-icon>
+            <input
+              id="end"
+              name="endDate"
+              type="date"
+              required
+              ngModel
+              #endInput="ngModel"
+              [class.invalid]="endInput.invalid && endInput.touched"
+            />
+          </div>
+          <span class="error-message" *ngIf="endInput.invalid && endInput.touched">
+            End date is required
+          </span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="location">
+          Location
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <mat-icon class="input-icon">location_on</mat-icon>
+          <input
+            id="location"
+            name="location"
+            type="text"
+            required
+            ngModel
+            placeholder="e.g. Grand Estate Hall, Vienna"
+            #locationInput="ngModel"
+            [class.invalid]="locationInput.invalid && locationInput.touched"
+          />
+        </div>
+        <span class="error-message" *ngIf="locationInput.invalid && locationInput.touched">
+          Location is required
+        </span>
+      </div>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="onCancel()" class="cancel-btn">
+          <mat-icon>close</mat-icon>
+          <span>Cancel</span>
+        </button>
+
+        <button mat-raised-button color="primary" type="submit" class="submit-btn">
+          <mat-icon>check_circle</mat-icon>
+          <span>Create Event</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
