@@ -95,12 +95,4 @@ export class AuthService {
     const username = email.split('@')[0];
     return username.charAt(0).toUpperCase() + username.slice(1);
   }
-
-  resetPassword(email: string, newPassword: string) {
-    const url = 'http://localhost:8080/api/auth/reset-password-simple';
-    return this.http.post(url, {
-      email: email,
-      newPassword: newPassword
-    });
-  }
 }
