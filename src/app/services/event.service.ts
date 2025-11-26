@@ -9,6 +9,7 @@ export interface EventResponseDTO {
   startingDate: string;
   endDate: string;
   location: string;
+  organizerID: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,38 +21,36 @@ export class EventService {
       private authService: AuthService
   ) {}
 
-  getEventsForCurrentUser(): Observable<EventResponseDTO[]> {
-    const userId = this.authService.getCurrentUserId();
+  private buildAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
-
-    if (!userId) {
-      throw new Error('User not logged in or userId missing in token.');
+    if (!token) {
+      throw new Error('User not logged in or token missing.');
     }
-
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-
-    return this.http.get<EventResponseDTO[]>(`${this.baseUrl}/user/${userId}`, {
-      headers
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
     });
   }
 
-  createEvent(eventData: any): Observable<EventResponseDTO> {
+  getEventsForCurrentUser(): Observable<EventResponseDTO[]> {
     const userId = this.authService.getCurrentUserId();
-    const token = this.authService.getToken();
-
     if (!userId) {
       throw new Error('User not logged in or userId missing in token.');
     }
+    const headers = this.buildAuthHeaders();
+    return this.http.get<EventResponseDTO[]>(
+      `${this.baseUrl}/user/${userId}`,
+      { headers }
+    );
+  }
 
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
+  createEvent(eventData: any): Observable<EventResponseDTO> {
+    // backend does not require userId in POST body if token contains identity,
+    // but keep validation that user is logged in
+    this.authService.getCurrentUserId(); // will be null if not logged in
+    const headers = this.buildAuthHeaders();
+
 
     return this.http.post<EventResponseDTO>(this.baseUrl, eventData, { headers });
-
   }
 }
