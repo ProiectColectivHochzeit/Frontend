@@ -1,0 +1,31 @@
+<div class="invite-dialog">
+    <div class="dialog-header">
+        <div class="header-icon">
+            <mat-icon>person_add</mat-icon>
+        </div>
+        <h2 mat-dialog-title>Invite Participant</h2>
+        <p class="dialog-subtitle">Enter the email address of the person you want to invite</p>
+    </div>
+
+    <mat-dialog-content>
+        <mat-form-field appearance="outline" class="email-field">
+            <mat-label>Email Address</mat-label>
+            <input matInput type="email" [(ngModel)]="email" (ngModelChange)="validateEmail()"
+                placeholder="example@email.com" required>
+            <mat-icon matPrefix>email</mat-icon>
+            @if (email && !isValid) {
+            <mat-error>Please enter a valid email address</mat-error>
+            }
+        </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button class="cancel-btn" (click)="onCancel()">
+            Cancel
+        </button>
+        <button mat-raised-button color="primary" class="invite-btn" [disabled]="!isValid" (click)="onInvite()">
+            <mat-icon>send</mat-icon>
+            Send Invite
+        </button>
+    </mat-dialog-actions>
+</div>

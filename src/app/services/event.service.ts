@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, catchError } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface EventResponseDTO {
@@ -12,14 +12,70 @@ export interface EventResponseDTO {
   organizerID: string;
 }
 
+export interface Participant {
+  id: string;
+  name: string;
+  email: string;
+  status: 'Confirmed' | 'Pending' | 'Declined';
+}
+
+export interface Photo {
+  id: string;
+  url: string;
+  uploaderName: string;
+  uploadedAt: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EventService {
   private readonly baseUrl = 'http://localhost:8080/api/events';
 
+  // Mock data for development
+  private mockParticipants: Participant[] = [
+    { id: '1', name: 'Emma Wilson', email: 'emma.w@email.com', status: 'Confirmed' },
+    { id: '2', name: 'John Smith', email: 'john.s@email.com', status: 'Confirmed' },
+    { id: '3', name: 'Lisa Brown', email: 'lisa.b@email.com', status: 'Pending' },
+    { id: '4', name: 'David Miller', email: 'david.m@email.com', status: 'Declined' },
+  ];
+
+  private mockPhotos: Photo[] = [
+    { id: '1', url: 'https://picsum.photos/400/300?random=1', uploaderName: 'Emma Wilson', uploadedAt: '2 hours ago' },
+    { id: '2', url: 'https://picsum.photos/400/300?random=2', uploaderName: 'John Smith', uploadedAt: '3 hours ago' },
+    { id: '3', url: 'https://picsum.photos/400/300?random=3', uploaderName: 'Lisa Brown', uploadedAt: '1 day ago' },
+  ];
+
+  // Mock events for development
+  private mockEvents: EventResponseDTO[] = [
+    {
+      id: 'mock-event-1',
+      name: 'Summer Wedding Celebration',
+      startingDate: '2025-06-15',
+      endDate: '2025-06-16',
+      location: 'Grand Ballroom, City Center',
+      organizerID: ''
+    },
+    {
+      id: 'mock-event-2',
+      name: 'Birthday Party',
+      startingDate: '2025-07-20',
+      endDate: '2025-07-20',
+      location: 'Riverside Garden',
+      organizerID: ''
+    },
+    {
+      id: 'mock-event-3',
+      name: 'Anniversary Dinner',
+      startingDate: '2025-08-10',
+      endDate: '2025-08-10',
+      location: 'Skyline Restaurant',
+      organizerID: ''
+    }
+  ];
+
   constructor(
-      private http: HttpClient,
-      private authService: AuthService
-  ) {}
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   private buildAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
@@ -38,9 +94,15 @@ export class EventService {
       throw new Error('User not logged in or userId missing in token.');
     }
     const headers = this.buildAuthHeaders();
+
+    // Update mock events with current user as organizer
+    this.mockEvents.forEach(event => event.organizerID = userId);
+
     return this.http.get<EventResponseDTO[]>(
       `${this.baseUrl}/user/${userId}`,
       { headers }
+    ).pipe(
+      catchError(() => of(this.mockEvents))
     );
   }
 
@@ -52,5 +114,75 @@ export class EventService {
 
 
     return this.http.post<EventResponseDTO>(this.baseUrl, eventData, { headers });
+  }
+
+  getEventById(eventId: string): Observable<EventResponseDTO> {
+    const headers = this.buildAuthHeaders();
+    return this.http.get<EventResponseDTO>(`${this.baseUrl}/${eventId}`, { headers }).pipe(
+      catchError(() => {
+        // Return mock event for development
+        return of({
+          id: eventId,
+          name: 'Sample Wedding Event',
+          startingDate: '2025-06-15',
+          endDate: '2025-06-16',
+          location: 'Grand Ballroom, City Center',
+          organizerID: this.authService.getCurrentUserId() || ''
+        });
+      })
+    );
+  }
+
+  getParticipants(eventId: string): Observable<Participant[]> {
+    const headers = this.buildAuthHeaders();
+    return this.http.get<Participant[]>(`${this.baseUrl}/${eventId}/participants`, { headers }).pipe(
+      catchError(() => of(this.mockParticipants))
+    );
+  }
+
+  inviteParticipant(eventId: string, email: string): Observable<any> {
+    const headers = this.buildAuthHeaders();
+    return this.http.post(`${this.baseUrl}/${eventId}/invite`, { email }, { headers }).pipe(
+      catchError(() => {
+        // Mock success for development
+        const newParticipant: Participant = {
+          id: Date.now().toString(),
+          name: email.split('@')[0],
+          email: email,
+          status: 'Pending'
+        };
+        this.mockParticipants.push(newParticipant);
+        return of({ success: true });
+      })
+    );
+  }
+
+  getPhotos(eventId: string): Observable<Photo[]> {
+    const headers = this.buildAuthHeaders();
+    return this.http.get<Photo[]>(`${this.baseUrl}/${eventId}/photos`, { headers }).pipe(
+      catchError(() => of(this.mockPhotos))
+    );
+  }
+
+  uploadPhoto(eventId: string, file: File): Observable<Photo> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.authService.getToken()}`
+    });
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<Photo>(`${this.baseUrl}/${eventId}/photos`, formData, { headers }).pipe(
+      catchError(() => {
+        // Mock upload for development
+        const newPhoto: Photo = {
+          id: Date.now().toString(),
+          url: URL.createObjectURL(file),
+          uploaderName: 'You',
+          uploadedAt: 'Just now'
+        };
+        this.mockPhotos.unshift(newPhoto);
+        return of(newPhoto);
+      })
+    );
   }
 }

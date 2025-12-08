@@ -1,0 +1,146 @@
+<div class="event-details-wrapper">
+    @if (isLoading) {
+    <div class="loading-state">
+        <mat-icon>hourglass_empty</mat-icon>
+        <p>Loading event details...</p>
+    </div>
+    }
+
+    @if (!isLoading && event) {
+    <div class="event-details-container">
+        <!-- Event Header -->
+        <div class="event-header">
+            <div class="header-content">
+                <button mat-icon-button class="back-button" routerLink="/my-events">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                <div class="event-info">
+                    <h1 class="event-title">{{ event.name }}</h1>
+                    <div class="event-meta">
+                        <span class="meta-item">
+                            <mat-icon>calendar_today</mat-icon>
+                            {{ formatDate(event.startingDate) }} – {{ formatDate(event.endDate) }}
+                        </span>
+                        <span class="meta-item">
+                            <mat-icon>location_on</mat-icon>
+                            {{ event.location }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            @if (isOrganizer) {
+            <span class="organizer-badge">
+                <mat-icon>star</mat-icon>
+                Organizer
+            </span>
+            }
+        </div>
+        <mat-tab-group class="details-tabs" animationDuration="300ms">
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon>groups</mat-icon>
+                    <span>Participants</span>
+                </ng-template>
+
+                <div class="tab-content">
+                    <div class="tab-header">
+                        <div class="tab-title-section">
+                            <h2>Guest List</h2>
+                            <p>{{ participants.length }} participants</p>
+                        </div>
+                        @if (isOrganizer) {
+                        <button mat-raised-button color="primary" class="invite-btn" (click)="openInviteDialog()">
+                            <mat-icon>person_add</mat-icon>
+                            Invite Participant
+                        </button>
+                        }
+                    </div>
+
+                    <div class="participants-list">
+                        @for (participant of participants; track participant.id) {
+                        <div class="participant-card">
+                            <div class="participant-info">
+                                <div class="participant-avatar" [style.background]="getAvatarColor(participant.name)">
+                                    {{ getInitials(participant.name) }}
+                                </div>
+                                <div class="participant-details">
+                                    <p class="participant-name">{{ participant.name }}</p>
+                                    <p class="participant-email">{{ participant.email }}</p>
+                                </div>
+                            </div>
+                            <span [class]="'status-badge status-' + participant.status.toLowerCase()">
+                                <mat-icon>{{ getStatusIcon(participant.status) }}</mat-icon>
+                                {{ participant.status }}
+                            </span>
+                        </div>
+                        } @empty {
+                        <div class="empty-state">
+                            <mat-icon>person_off</mat-icon>
+                            <p>No participants yet</p>
+                            @if (isOrganizer) {
+                            <button mat-raised-button color="primary" (click)="openInviteDialog()">
+                                <mat-icon>person_add</mat-icon>
+                                Invite Your First Participant
+                            </button>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+            </mat-tab>
+
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon>photo_library</mat-icon>
+                    <span>Photos</span>
+                </ng-template>
+
+                <div class="tab-content">
+                    <div class="tab-header">
+                        <div class="tab-title-section">
+                            <h2>Photo Album</h2>
+                            <p>{{ photos.length }} photos</p>
+                        </div>
+                        <button mat-raised-button color="primary" class="upload-btn" (click)="fileInput.click()">
+                            <mat-icon>cloud_upload</mat-icon>
+                            Upload Photo
+                        </button>
+                        <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)">
+                    </div>
+
+                    <div class="photos-grid">
+                        @for (photo of photos; track photo.id) {
+                        <div class="photo-card">
+                            <img [src]="photo.url" [alt]="'Photo by ' + photo.uploaderName" class="photo-image">
+                            <div class="photo-overlay">
+                                <p class="uploader-name">{{ photo.uploaderName }}</p>
+                                <p class="upload-date">{{ photo.uploadedAt }}</p>
+                            </div>
+                        </div>
+                        } @empty {
+                        <div class="empty-state photos-empty">
+                            <mat-icon>add_photo_alternate</mat-icon>
+                            <p>No photos yet</p>
+                            <button mat-raised-button color="primary" (click)="fileInput.click()">
+                                <mat-icon>cloud_upload</mat-icon>
+                                Upload the First Photo
+                            </button>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    }
+
+    @if (!isLoading && !event) {
+    <div class="error-state">
+        <mat-icon>error_outline</mat-icon>
+        <p>Event not found</p>
+        <button mat-raised-button color="primary" routerLink="/my-events">
+            Back to My Events
+        </button>
+    </div>
+    }
+</div>
