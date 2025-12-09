@@ -108,22 +108,22 @@ export class EventDetailsComponent implements OnInit {
         });
     }
 
-    onFileSelected(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        if (input.files && input.files.length > 0) {
-            const file = input.files[0];
-            this.eventService.uploadPhoto(this.eventId, file).subscribe({
-                next: () => {
-                    this.loadPhotos();
-                },
-                error: (err: Error) => {
-                    console.error('Error uploading photo:', err);
-                }
-            });
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.eventService.uploadPhoto(this.eventId, file).subscribe({
+        next: (newPhoto: Photo) => {
+          this.photos = [newPhoto, ...this.photos];
+        },
+        error: (err: Error) => {
+          console.error('Error uploading photo:', err);
         }
+      });
     }
+  }
 
-    formatDate(dateStr: string): string {
+  formatDate(dateStr: string): string {
         return new Date(dateStr).toLocaleDateString('en-GB', {
             day: '2-digit',
             month: 'long',
