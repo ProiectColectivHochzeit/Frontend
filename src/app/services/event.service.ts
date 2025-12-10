@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, catchError } from 'rxjs';
+import { Observable, of, catchError, map } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface EventResponseDTO {
@@ -29,6 +29,7 @@ export interface Photo {
 @Injectable({ providedIn: 'root' })
 export class EventService {
   private readonly baseUrl = 'http://localhost:8080/api/events';
+  private readonly photosUrl = 'http://localhost:8080/api/photos';
 
   // Mock data for development
   private mockParticipants: Participant[] = [
@@ -165,24 +166,37 @@ export class EventService {
   }
 
   uploadPhoto(eventId: string, file: File): Observable<Photo> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.authService.getToken()}`
-    });
+    const token = this.authService.getToken();
+
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('eventId', eventId);
 
-    return this.http.post<Photo>(`${this.baseUrl}/${eventId}/photos`, formData, { headers }).pipe(
+    return this.http.post<any>(this.photosUrl, formData, { headers }).pipe(
+      map((res) => {
+        const photo: Photo = {
+          id: (res.publicId as string) || Date.now().toString(),
+          url: res.url as string,
+          uploaderName: 'You',
+          uploadedAt: 'Just now'
+        };
+        return photo;
+      }),
       catchError(() => {
-        // Mock upload for development
-        const newPhoto: Photo = {
+        const fallback: Photo = {
           id: Date.now().toString(),
           url: URL.createObjectURL(file),
           uploaderName: 'You',
           uploadedAt: 'Just now'
         };
-        this.mockPhotos.unshift(newPhoto);
-        return of(newPhoto);
+        return of(fallback);
       })
     );
   }
+
 }
