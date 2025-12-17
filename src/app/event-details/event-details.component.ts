@@ -1,13 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { EventService, EventResponseDTO, Participant, Photo } from '../services/event.service';
+import {
+  EventService,
+  Participant,
+  Photo,
+  EventResponseDTOWithoutOrgId
+} from '../services/event.service';
 import { AuthService } from '../services/auth.service';
 import { InviteDialogComponent } from './invite-dialog/invite-dialog.component';
+import {InvitationService} from "../services/invitation.service";
 
 @Component({
     selector: 'app-event-details',
@@ -25,12 +31,13 @@ import { InviteDialogComponent } from './invite-dialog/invite-dialog.component';
 })
 export class EventDetailsComponent implements OnInit {
     eventId: string = '';
-    event: EventResponseDTO | null = null;
+    event: EventResponseDTOWithoutOrgId | null = null;
     participants: Participant[] = [];
     photos: Photo[] = [];
     isLoading = true;
     isOrganizer = false;
     currentUserId: string | null = null;
+    private readonly _invitationService: InvitationService = inject(InvitationService);
 
     constructor(
         private route: ActivatedRoute,
@@ -47,22 +54,33 @@ export class EventDetailsComponent implements OnInit {
         });
     }
 
-    private loadEventData(): void {
-        this.isLoading = true;
+  private loadEventData(): void {
+    this.isLoading = true;
 
-        this.eventService.getEventById(this.eventId).subscribe({
-            next: (event: EventResponseDTO) => {
-                this.event = event;
-                this.isOrganizer = event.organizerID === this.currentUserId;
-                this.loadParticipants();
-                this.loadPhotos();
+    this.eventService.getEventById(this.eventId).subscribe({
+      next: (eventResponseDTOWithoutOrgId) => { // inferred as EventResponseDTOWithoutOrgId
+        this.event = eventResponseDTOWithoutOrgId;
+        this.eventService
+          .isUserOrganizerOfEvent(this.eventId, this.currentUserId!)
+          .subscribe({
+            next: (isOrg: boolean) => {
+              this.isOrganizer = isOrg;
             },
             error: (err: Error) => {
-                console.error('Error loading event:', err);
-                this.isLoading = false;
+              console.error('Error checking organizer:', err);
+              this.isOrganizer = false;
             }
-        });
-    }
+          });
+
+        this.loadParticipants();
+        this.loadPhotos();
+      },
+      error: (err: Error) => {
+        console.error('Error loading event:', err);
+        this.isLoading = false;
+      }
+    });
+  }
 
     private loadParticipants(): void {
         this.eventService.getParticipants(this.eventId).subscribe({
@@ -96,9 +114,9 @@ export class EventDetailsComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((email: string) => {
             if (email) {
-                this.eventService.inviteParticipant(this.eventId, email).subscribe({
+                this._invitationService.createInvitation(this.eventId, this.currentUserId!, email).subscribe({
                     next: () => {
-                        this.loadParticipants();
+                        this.loadParticipants()
                     },
                     error: (err: Error) => {
                         console.error('Error inviting participant:', err);

@@ -48,6 +48,10 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  public isLoggedIn(): boolean {
+    return this.getToken() !== null;
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
   }

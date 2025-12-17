@@ -7,6 +7,8 @@ import { LayoutComponent } from './layout/layout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GuestListComponent } from './guest-list/guest-list.component';
 import { EventDetailsComponent } from './event-details/event-details.component';
+import {InvitationAcceptComponent} from './invitation-accept/invitation-accept-component';
+import {InvitationDeclineComponent} from './invitation-decline/invitation-decline.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -17,6 +19,8 @@ export const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
+      { path: 'invitation-decline', component: InvitationDeclineComponent },
+      { path: 'invitation-accept', component: InvitationAcceptComponent },
       { path: 'home', component: DashboardComponent },
       { path: 'my-events', component: MyEventsComponent },
       { path: 'create-event', component: CreateEventComponent },
@@ -24,5 +28,6 @@ export const routes: Routes = [
       { path: 'event/:id', component: EventDetailsComponent },
       { path: '**', redirectTo: 'home' }
     ]
-  }
+  },
+
 ];
