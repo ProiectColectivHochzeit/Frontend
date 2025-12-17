@@ -12,6 +12,14 @@ export interface EventResponseDTO {
   organizerID: string;
 }
 
+export type EventResponseDTOWithoutOrgId = {
+  id : string;
+  name: string;
+  startingDate: string;
+  endDate: string;
+  location: string;
+}
+
 export interface Participant {
   id: string;
   name: string;
@@ -52,7 +60,7 @@ export class EventService {
       startingDate: '2025-06-15',
       endDate: '2025-06-16',
       location: 'Grand Ballroom, City Center',
-      organizerID: ''
+      organizerID: '',
     },
     {
       id: 'mock-event-2',
@@ -60,7 +68,7 @@ export class EventService {
       startingDate: '2025-07-20',
       endDate: '2025-07-20',
       location: 'Riverside Garden',
-      organizerID: ''
+      organizerID: '',
     },
     {
       id: 'mock-event-3',
@@ -68,7 +76,7 @@ export class EventService {
       startingDate: '2025-08-10',
       endDate: '2025-08-10',
       location: 'Skyline Restaurant',
-      organizerID: ''
+      organizerID: '',
     }
   ];
 
@@ -112,11 +120,16 @@ export class EventService {
     this.authService.getCurrentUserId(); // will be null if not logged in
     const headers = this.buildAuthHeaders();
 
-
-    return this.http.post<EventResponseDTO>(this.baseUrl, eventData, { headers });
+    return this.http.post<EventResponseDTO>(this.baseUrl, eventData);
   }
 
-  getEventById(eventId: string): Observable<EventResponseDTO> {
+  public isUserOrganizerOfEvent(eventId: String, userId : String): Observable<boolean> {
+      return this.http.get<boolean>(`${this.baseUrl}/isOrganizer/${userId}/${eventId}`).pipe(
+        catchError(() => { return of(false) })
+      )
+  }
+
+  getEventById(eventId: string): Observable<EventResponseDTOWithoutOrgId> {
     const headers = this.buildAuthHeaders();
     return this.http.get<EventResponseDTO>(`${this.baseUrl}/${eventId}`, { headers }).pipe(
       catchError(() => {
@@ -126,8 +139,7 @@ export class EventService {
           name: 'Sample Wedding Event',
           startingDate: '2025-06-15',
           endDate: '2025-06-16',
-          location: 'Grand Ballroom, City Center',
-          organizerID: this.authService.getCurrentUserId() || ''
+          location: 'Grand Ballroom, City Center'
         });
       })
     );
@@ -135,7 +147,7 @@ export class EventService {
 
   getParticipants(eventId: string): Observable<Participant[]> {
     const headers = this.buildAuthHeaders();
-    return this.http.get<Participant[]>(`${this.baseUrl}/${eventId}/participants`, { headers }).pipe(
+    return this.http.get<Participant[]>(`${this.baseUrl}/participants/${eventId}`, { headers }).pipe(
       catchError(() => of(this.mockParticipants))
     );
   }

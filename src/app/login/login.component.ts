@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,6 +8,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import {Router, RouterModule} from '@angular/router';
 import {AuthService} from '../services/auth.service';
+import {InvitationService} from '../services/invitation.service';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +29,7 @@ import {AuthService} from '../services/auth.service';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   hidePassword = true;
+  private _invitationService: InvitationService = inject(InvitationService);
 
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
@@ -49,6 +51,19 @@ export class LoginComponent implements OnInit {
         password: this.loginForm.value.password
       }).subscribe({
         next: () => {
+          if (localStorage.getItem('invitationId')){
+            const invitationId = localStorage.getItem('invitationId')!;
+            this._invitationService.acceptInvitation(this.authService.getCurrentUserId()!, invitationId).subscribe({
+              next: () => {
+                this.router.navigate(['/events']);
+              },
+              error: (err) => {
+                this.router.navigate(['/dashboard']);
+              }
+            });
+
+            localStorage.removeItem('invitationId');
+          }
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
