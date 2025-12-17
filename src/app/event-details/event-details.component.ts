@@ -8,6 +8,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventService, EventResponseDTO, Participant, Photo } from '../services/event.service';
 import { AuthService } from '../services/auth.service';
 import { InviteDialogComponent } from './invite-dialog/invite-dialog.component';
+import { PhotoPreviewDialogComponent } from './photo-preview-dialog/photo-preview-dialog.component';
 
 @Component({
     selector: 'app-event-details',
@@ -31,6 +32,7 @@ export class EventDetailsComponent implements OnInit {
     isLoading = true;
     isOrganizer = false;
     currentUserId: string | null = null;
+    isUploadingPhoto = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -112,12 +114,17 @@ export class EventDetailsComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
+      this.isUploadingPhoto = true;
       this.eventService.uploadPhoto(this.eventId, file).subscribe({
         next: (newPhoto: Photo) => {
           this.photos = [newPhoto, ...this.photos];
+          this.isUploadingPhoto = false;
+          input.value = '';
         },
         error: (err: Error) => {
           console.error('Error uploading photo:', err);
+          this.isUploadingPhoto = false;
+          input.value = '';
         }
       });
     }
@@ -161,4 +168,19 @@ export class EventDetailsComponent implements OnInit {
             default: return 'help';
         }
     }
+
+  openPhoto(photo: Photo): void {
+    this.dialog.open(PhotoPreviewDialogComponent, {
+      data: {
+        url: photo.url,
+        uploaderName: photo.uploaderName,
+        uploadedAt: photo.uploadedAt
+      },
+      panelClass: 'photo-preview-dialog',
+      maxWidth: '95vw',
+      maxHeight: '95vh',
+      autoFocus: false
+    });
+  }
+
 }
