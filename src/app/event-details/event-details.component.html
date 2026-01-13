@@ -49,10 +49,17 @@
                             <p>{{ participants.length }} participants</p>
                         </div>
                         @if (isOrganizer) {
-                        <button mat-raised-button color="primary" class="invite-btn" (click)="openInviteDialog()">
-                            <mat-icon>person_add</mat-icon>
-                            Invite Participant
-                        </button>
+                        <div class="action-buttons">
+                            <button mat-raised-button color="primary" class="invite-btn" (click)="openInviteDialog()">
+                                <mat-icon>person_add</mat-icon>
+                                Invite Participant
+                            </button>
+                            <button mat-raised-button color="accent" class="import-btn" (click)="excelInput.click()">
+                                <mat-icon>upload_file</mat-icon>
+                                Import from Excel
+                            </button>
+                            <input #excelInput type="file" accept=".xlsx,.xls,.csv" hidden (change)="onExcelFileSelected($event)">
+                        </div>
                         }
                     </div>
 
@@ -68,10 +75,17 @@
                                     <p class="participant-email">{{ participant.email }}</p>
                                 </div>
                             </div>
-                            <span [class]="'status-badge status-' + participant.status.toLowerCase()">
-                                <mat-icon>{{ getStatusIcon(participant.status) }}</mat-icon>
-                                {{ participant.status }}
-                            </span>
+                            <div class="participant-actions">
+                                <span [class]="'status-badge status-' + participant.status.toLowerCase()">
+                                    <mat-icon>{{ getStatusIcon(participant.status) }}</mat-icon>
+                                    {{ participant.status }}
+                                </span>
+                                @if (isOrganizer) {
+                                <button mat-icon-button color="warn" class="delete-btn" (click)="deleteParticipant(participant)" title="Delete participant">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                                }
+                            </div>
                         </div>
                         } @empty {
                         <div class="empty-state">

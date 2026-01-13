@@ -17,6 +17,7 @@ export interface Participant {
   name: string;
   email: string;
   status: 'Confirmed' | 'Pending' | 'Declined';
+  invitationId?: string;
 }
 
 export interface Photo {
@@ -169,7 +170,8 @@ export class EventService {
             id: item.id || item.email, // Use email as fallback ID if id is null
             name: item.name || item.email.split('@')[0], // Use email prefix if name is not available
             email: item.email,
-            status: status
+            status: status,
+            invitationId: item.invitationId || item.id // Include invitationId from backend
           } as Participant;
         });
         console.log('Mapped participants:', mapped);
@@ -350,6 +352,40 @@ export class EventService {
     return this.http.delete(`http://localhost:8080/api/photos/${publicId}`, { headers }).pipe(
       catchError((error) => {
         console.error('Error deleting photo:', error);
+        console.error('Error details:', error.error, error.status, error.statusText);
+        throw error;
+      })
+    );
+  }
+
+  deleteInvitation(eventId: string, invitationId: string): Observable<any> {
+    const headers = this.buildAuthHeaders();
+    console.log('Deleting invitation:', invitationId, 'for event:', eventId);
+    return this.http.delete(`${this.baseUrl}/${eventId}/invitations/${invitationId}`, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error deleting invitation:', error);
+        console.error('Error details:', error.error, error.status, error.statusText);
+        throw error;
+      })
+    );
+  }
+
+  importParticipantsFromExcel(eventId: string, file: File): Observable<any> {
+    const token = this.authService.getToken();
+    
+    // Don't set Content-Type header - let browser set it with boundary for multipart/form-data
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    console.log('Importing participants from Excel/CSV for event:', eventId);
+    return this.http.post(`${this.baseUrl}/${eventId}/import-participants`, formData, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error importing participants:', error);
         console.error('Error details:', error.error, error.status, error.statusText);
         throw error;
       })

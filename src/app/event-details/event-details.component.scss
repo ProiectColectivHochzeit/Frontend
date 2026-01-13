@@ -63,6 +63,11 @@ $white: #ffffff;
   flex-wrap: wrap;
   gap: 1rem;
 
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
   &::before {
     content: '';
     position: absolute;
@@ -251,6 +256,21 @@ $white: #ffffff;
     background: lighten($bg-light, 1%);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     transform: translateX(4px);
+  }
+
+  .participant-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .delete-btn {
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 
   @media (max-width: 600px) {

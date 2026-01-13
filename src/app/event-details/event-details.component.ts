@@ -199,4 +199,61 @@ export class EventDetailsComponent implements OnInit {
             }
         });
     }
+
+    deleteParticipant(participant: Participant): void {
+        console.log('Deleting participant:', participant);
+        console.log('Participant invitationId:', participant.invitationId);
+        
+        if (!participant.invitationId) {
+            console.error('Participant object:', participant);
+            alert('Cannot delete: Invitation ID not found. Please refresh the page and try again.');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to remove ${participant.name || participant.email} from this event?`)) {
+            return;
+        }
+
+        this.eventService.deleteInvitation(this.eventId, participant.invitationId).subscribe({
+            next: () => {
+                this.loadParticipants();
+            },
+            error: (err: any) => {
+                console.error('Error deleting participant:', err);
+                alert('Failed to delete participant: ' + (err.error?.error || err.message || 'Unknown error'));
+            }
+        });
+    }
+
+    onExcelFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            
+            // Validate file type
+            if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls') && !file.name.endsWith('.csv')) {
+                alert('Please select an Excel file (.xlsx or .xls) or CSV file (.csv)');
+                return;
+            }
+
+            if (!confirm(`Import participants from ${file.name}?`)) {
+                return;
+            }
+
+            this.eventService.importParticipantsFromExcel(this.eventId, file).subscribe({
+                next: (result: any) => {
+                    const message = `Import completed!\nTotal: ${result.total}\nSuccess: ${result.success}\nFailed: ${result.failed}`;
+                    alert(message);
+                    this.loadParticipants();
+                    // Reset file input
+                    input.value = '';
+                },
+                error: (err: any) => {
+                    console.error('Error importing participants:', err);
+                    alert('Failed to import participants: ' + (err.error?.error || err.message || 'Unknown error'));
+                    input.value = '';
+                }
+            });
+        }
+    }
 }
