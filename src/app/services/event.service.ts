@@ -147,9 +147,36 @@ export class EventService {
     }
 
     const headers = this.buildAuthHeaders();
-    return this.http.get<Participant[]>(`${this.baseUrl}/${eventId}/participants`, { headers }).pipe(
+    console.log('Fetching participants for event:', eventId);
+    return this.http.get<any[]>(`${this.baseUrl}/${eventId}/participants`, { headers }).pipe(
+      map((response) => {
+        console.log('Participants response from backend:', response);
+        const mapped = response.map((item: any) => {
+          // Map backend status enum to frontend status
+          let status: 'Confirmed' | 'Pending' | 'Declined';
+          if (item.status === 'ACCEPTED') {
+            status = 'Confirmed';
+          } else if (item.status === 'PENDING') {
+            status = 'Pending';
+          } else if (item.status === 'DECLINED') {
+            status = 'Declined';
+          } else {
+            status = 'Pending'; // default
+          }
+
+          return {
+            id: item.id || item.email, // Use email as fallback ID if id is null
+            name: item.name || item.email.split('@')[0], // Use email prefix if name is not available
+            email: item.email,
+            status: status
+          } as Participant;
+        });
+        console.log('Mapped participants:', mapped);
+        return mapped;
+      }),
       catchError((error) => {
         console.error('Error loading participants:', error);
+        console.error('Error details:', error.error, error.status, error.statusText);
         return of([]);
       })
     );
@@ -265,6 +292,53 @@ export class EventService {
     } catch {
       return dateStr;
     }
+  }
+
+  acceptInvitation(invitationId: string): Observable<any> {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      console.error('Cannot accept invitation: User not logged in');
+      return new Observable(observer => {
+        observer.error(new Error('User not logged in'));
+      });
+    }
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(invitationId)) {
+      console.error('Invalid invitation ID format:', invitationId);
+      return new Observable(observer => {
+        observer.error(new Error('Invalid invitation ID format'));
+      });
+    }
+
+    const headers = this.buildAuthHeaders();
+    const payload = {
+      invitationId: invitationId,
+      invitedUserId: userId
+    };
+
+    console.log('Accepting invitation:', payload);
+    console.log('Invitation ID type:', typeof invitationId, 'Value:', invitationId);
+    return this.http.post('http://localhost:8080/api/invitations/accept', payload, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error accepting invitation:', error);
+        console.error('Error details:', error.error, error.status, error.statusText);
+        throw error;
+      })
+    );
+  }
+
+  declineInvitation(invitationId: string): Observable<any> {
+    const headers = this.buildAuthHeaders();
+    console.log('Declining invitation:', invitationId);
+    return this.http.post(`http://localhost:8080/api/invitations/decline/${invitationId}`, {}, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error declining invitation:', error);
+        console.error('Error details:', error.error, error.status, error.statusText);
+        throw error;
+      })
+    );
   }
 
 }

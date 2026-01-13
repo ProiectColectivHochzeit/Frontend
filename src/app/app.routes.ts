@@ -7,12 +7,16 @@ import { LayoutComponent } from './layout/layout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GuestListComponent } from './guest-list/guest-list.component';
 import { EventDetailsComponent } from './event-details/event-details.component';
+import { InvitationAcceptComponent } from './invitation-accept/invitation-accept.component';
+import { InvitationDeclineComponent } from './invitation-decline/invitation-decline.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'forgot-password', component: LoginComponent },
+  { path: 'invitation-accept', component: InvitationAcceptComponent },
+  { path: 'invitation-decline', component: InvitationDeclineComponent },
   {
     path: '',
     component: LayoutComponent,
