@@ -1,0 +1,69 @@
+<div class="gallery-container" (click)="closeOnBackdrop($event)">
+  <div class="gallery-content" (click)="$event.stopPropagation()">
+    <!-- Close button -->
+    <button mat-icon-button class="close-button" (click)="close()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <!-- Navigation buttons -->
+    <button 
+      *ngIf="photos.length > 1"
+      mat-icon-button 
+      class="nav-button prev-button" 
+      (click)="previousPhoto()"
+      [disabled]="currentIndex === 0"
+      aria-label="Previous photo">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    
+    <button 
+      *ngIf="photos.length > 1"
+      mat-icon-button 
+      class="nav-button next-button" 
+      (click)="nextPhoto()"
+      [disabled]="currentIndex === photos.length - 1"
+      aria-label="Next photo">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    <!-- Photo display -->
+    <div class="photo-wrapper">
+      <img 
+        [src]="currentPhoto.url" 
+        [alt]="'Photo by ' + currentPhoto.uploaderName"
+        class="gallery-photo"
+        (click)="nextPhoto()">
+      
+      <!-- Photo info -->
+      <div class="photo-info">
+        <div class="photo-meta">
+          <p class="uploader-name">
+            <mat-icon>person</mat-icon>
+            {{ currentPhoto.uploaderName }}
+          </p>
+          <p class="upload-date">
+            <mat-icon>schedule</mat-icon>
+            {{ currentPhoto.uploadedAt }}
+          </p>
+        </div>
+        
+        <!-- Delete button -->
+        <button 
+          *ngIf="canDelete"
+          mat-raised-button 
+          color="warn" 
+          class="delete-button"
+          (click)="deletePhoto()"
+          [disabled]="isDeleting">
+          <mat-icon>{{ isDeleting ? 'hourglass_empty' : 'delete' }}</mat-icon>
+          {{ isDeleting ? 'Deleting...' : 'Delete Photo' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Photo counter -->
+    <div *ngIf="photos.length > 1" class="photo-counter">
+      {{ currentIndex + 1 }} / {{ photos.length }}
+    </div>
+  </div>
+</div>

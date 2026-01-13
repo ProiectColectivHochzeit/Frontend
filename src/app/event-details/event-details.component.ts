@@ -8,6 +8,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventService, EventResponseDTO, Participant, Photo } from '../services/event.service';
 import { AuthService } from '../services/auth.service';
 import { InviteDialogComponent } from './invite-dialog/invite-dialog.component';
+import { PhotoGalleryComponent } from './photo-gallery/photo-gallery.component';
 
 @Component({
     selector: 'app-event-details',
@@ -174,5 +175,28 @@ export class EventDetailsComponent implements OnInit {
             case 'Declined': return 'cancel';
             default: return 'help';
         }
+    }
+
+    openPhotoGallery(photoIndex: number): void {
+        const dialogRef = this.dialog.open(PhotoGalleryComponent, {
+            width: '100vw',
+            height: '100vh',
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            panelClass: 'photo-gallery-dialog',
+            data: {
+                photos: this.photos,
+                initialIndex: photoIndex,
+                eventId: this.eventId,
+                isOrganizer: this.isOrganizer
+            }
+        });
+
+        dialogRef.afterClosed().subscribe((result: any) => {
+            if (result && result.deleted) {
+                // Reload photos after deletion
+                this.loadPhotos();
+            }
+        });
     }
 }

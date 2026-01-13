@@ -109,8 +109,8 @@
                     </div>
 
                     <div class="photos-grid">
-                        @for (photo of photos; track photo.id) {
-                        <div class="photo-card">
+                        @for (photo of photos; track photo.id; let i = $index) {
+                        <div class="photo-card" (click)="openPhotoGallery(i)">
                             <img [src]="photo.url" [alt]="'Photo by ' + photo.uploaderName" class="photo-image">
                             <div class="photo-overlay">
                                 <p class="uploader-name">{{ photo.uploaderName }}</p>

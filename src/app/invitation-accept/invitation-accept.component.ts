@@ -135,7 +135,7 @@ export class InvitationAcceptComponent implements OnInit {
         console.error('Full error object:', JSON.stringify(err, null, 2));
         
         // If email mismatch, show logout button
-        if (this.error.includes('does not match the invitation email') || this.error.includes('email')) {
+        if (this.error && (this.error.includes('does not match the invitation email') || this.error.includes('email'))) {
           this.showLogoutButton = true;
           this.error = 'You are logged in with a different email than the one that was invited. Please log out and log in with the email that received the invitation.';
         }

@@ -22,6 +22,7 @@ export interface Participant {
 export interface Photo {
   id: string;
   url: string;
+  publicId?: string;
   uploaderName: string;
   uploadedAt: string;
 }
@@ -214,9 +215,10 @@ export class EventService {
         return photos.map((p) => ({
           id: p.id || p.publicId || Date.now().toString(),
           url: p.url,
+          publicId: p.publicId,
           uploaderName: p.uploaderName || 'Unknown',
           uploadedAt: this.formatUploadDate(p.uploadedAt)
-        }));
+        } as Photo));
       }),
       catchError((error) => {
         console.error('Error loading photos from backend:', error);
@@ -247,7 +249,7 @@ export class EventService {
     formData.append('file', file);
     formData.append('eventId', eventId);
 
-    console.log('Uploading photo for event:', eventId);
+        console.log('Uploading photo for event:', eventId);
 
     return this.http.post<any>(this.photosUrl, formData, { headers }).pipe(
       map((res) => {
@@ -255,6 +257,7 @@ export class EventService {
         const photo: Photo = {
           id: res.id || res.publicId || Date.now().toString(),
           url: res.url as string,
+          publicId: res.publicId,
           uploaderName: res.uploaderName || this.authService.getFullName() || 'You',
           uploadedAt: this.formatUploadDate(res.uploadedAt) || 'Just now'
         };
@@ -335,6 +338,18 @@ export class EventService {
     return this.http.post(`http://localhost:8080/api/invitations/decline/${invitationId}`, {}, { headers }).pipe(
       catchError((error) => {
         console.error('Error declining invitation:', error);
+        console.error('Error details:', error.error, error.status, error.statusText);
+        throw error;
+      })
+    );
+  }
+
+  deletePhoto(publicId: string): Observable<any> {
+    const headers = this.buildAuthHeaders();
+    console.log('Deleting photo with publicId:', publicId);
+    return this.http.delete(`http://localhost:8080/api/photos/${publicId}`, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error deleting photo:', error);
         console.error('Error details:', error.error, error.status, error.statusText);
         throw error;
       })
