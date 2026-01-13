@@ -38,9 +38,9 @@ export class CreateEventComponent {
       return;
     }
 
-    const userEmail = this.authService.getEmail();
-    if (!userEmail) {
-      console.error('No logged user email. Cannot create event.');
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      console.error('No logged user ID. Cannot create event.');
       this.router.navigate(['/login']);
       return;
     }
@@ -50,7 +50,7 @@ export class CreateEventComponent {
       startingDate: this.formatToDateOnly(form.value.startingDate),
       endDate: this.formatToDateOnly(form.value.endDate),
       location: form.value.location,
-      organizerID: userEmail
+      organizerId: userId
     };
 
     console.log('Creating event payload (date-only):', payload);

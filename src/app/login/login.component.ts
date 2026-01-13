@@ -6,8 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import {Router, RouterModule} from '@angular/router';
-import {AuthService} from '../services/auth.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,15 +28,30 @@ import {AuthService} from '../services/auth.service';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   hidePassword = true;
+  returnUrl: string | null = null;
+  message: string | null = null;
 
-
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
-
-  }
+  constructor(
+    private fb: FormBuilder, 
+    private authService: AuthService, 
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
+    // Get returnUrl and message from query params
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || null;
+    this.message = this.route.snapshot.queryParams['message'] || null;
+    
+    // If coming from invitation, try to extract email from returnUrl
+    let prefillEmail = '';
+    if (this.returnUrl && this.returnUrl.includes('invitation-accept')) {
+      // Try to get email from invitation if possible (we'll need to fetch it)
+      // For now, just show the message
+    }
+
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: [prefillEmail, [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
@@ -49,7 +64,12 @@ export class LoginComponent implements OnInit {
         password: this.loginForm.value.password
       }).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          // Navigate to returnUrl if provided, otherwise go to dashboard
+          if (this.returnUrl) {
+            this.router.navigateByUrl(this.returnUrl);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         },
         error: (err) => {
           console.error('Login error:', err);

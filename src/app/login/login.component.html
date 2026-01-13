@@ -6,6 +6,9 @@
       </div>
       <h1 class="login-title">Wedding Events</h1>
       <p class="login-subtitle">Welcome back! Please login to your account.</p>
+      <p *ngIf="message" class="invitation-message" style="color: #667eea; font-weight: 500; margin-top: 10px;">
+        {{ message }}
+      </p>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
