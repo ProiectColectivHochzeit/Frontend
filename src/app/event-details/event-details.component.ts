@@ -50,6 +50,15 @@ export class EventDetailsComponent implements OnInit {
     private loadEventData(): void {
         this.isLoading = true;
 
+        // Validate UUID format before making API call
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(this.eventId)) {
+            console.error('Invalid event ID format:', this.eventId);
+            alert('Invalid event ID. Please navigate to a valid event.');
+            this.isLoading = false;
+            return;
+        }
+
         this.eventService.getEventById(this.eventId).subscribe({
             next: (event: EventResponseDTO) => {
                 this.event = event;
@@ -59,6 +68,7 @@ export class EventDetailsComponent implements OnInit {
             },
             error: (err: Error) => {
                 console.error('Error loading event:', err);
+                alert('Event not found. Please check if the event exists.');
                 this.isLoading = false;
             }
         });
@@ -114,10 +124,14 @@ export class EventDetailsComponent implements OnInit {
       const file = input.files[0];
       this.eventService.uploadPhoto(this.eventId, file).subscribe({
         next: (newPhoto: Photo) => {
+          console.log('Photo uploaded successfully:', newPhoto);
           this.photos = [newPhoto, ...this.photos];
+          // Reload photos from server to ensure we have the latest data
+          this.loadPhotos();
         },
         error: (err: Error) => {
           console.error('Error uploading photo:', err);
+          alert('Failed to upload photo. Please check the console for details.');
         }
       });
     }

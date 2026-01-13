@@ -96,14 +96,15 @@ export class EventService {
     }
     const headers = this.buildAuthHeaders();
 
-    // Update mock events with current user as organizer
-    this.mockEvents.forEach(event => event.organizerID = userId);
-
     return this.http.get<EventResponseDTO[]>(
       `${this.baseUrl}/user/${userId}`,
       { headers }
     ).pipe(
-      catchError(() => of(this.mockEvents))
+      catchError((error) => {
+        console.error('Error loading events from backend:', error);
+        // Return empty array instead of mock data
+        return of([]);
+      })
     );
   }
 
@@ -118,26 +119,39 @@ export class EventService {
   }
 
   getEventById(eventId: string): Observable<EventResponseDTO> {
+    // Validate that eventId is a valid UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(eventId)) {
+      console.error('Invalid event ID format (not a UUID):', eventId);
+      return new Observable(observer => {
+        observer.error(new Error('Invalid event ID. Please select a valid event.'));
+      });
+    }
+
     const headers = this.buildAuthHeaders();
     return this.http.get<EventResponseDTO>(`${this.baseUrl}/${eventId}`, { headers }).pipe(
-      catchError(() => {
-        // Return mock event for development
-        return of({
-          id: eventId,
-          name: 'Sample Wedding Event',
-          startingDate: '2025-06-15',
-          endDate: '2025-06-16',
-          location: 'Grand Ballroom, City Center',
-          organizerID: this.authService.getCurrentUserId() || ''
-        });
+      catchError((error) => {
+        console.error('Error loading event from backend:', error);
+        // Don't return mock data - let the error propagate
+        throw error;
       })
     );
   }
 
   getParticipants(eventId: string): Observable<Participant[]> {
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(eventId)) {
+      console.error('Invalid event ID format for participants:', eventId);
+      return of([]);
+    }
+
     const headers = this.buildAuthHeaders();
     return this.http.get<Participant[]>(`${this.baseUrl}/${eventId}/participants`, { headers }).pipe(
-      catchError(() => of(this.mockParticipants))
+      catchError((error) => {
+        console.error('Error loading participants:', error);
+        return of([]);
+      })
     );
   }
 
@@ -159,13 +173,42 @@ export class EventService {
   }
 
   getPhotos(eventId: string): Observable<Photo[]> {
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(eventId)) {
+      console.error('Invalid event ID format for photos:', eventId);
+      return of([]);
+    }
+
     const headers = this.buildAuthHeaders();
-    return this.http.get<Photo[]>(`${this.baseUrl}/${eventId}/photos`, { headers }).pipe(
-      catchError(() => of(this.mockPhotos))
+    return this.http.get<any[]>(`${this.baseUrl}/${eventId}/photos`, { headers }).pipe(
+      map((photos) => {
+        console.log('Photos loaded from backend:', photos);
+        return photos.map((p) => ({
+          id: p.id || p.publicId || Date.now().toString(),
+          url: p.url,
+          uploaderName: p.uploaderName || 'Unknown',
+          uploadedAt: this.formatUploadDate(p.uploadedAt)
+        }));
+      }),
+      catchError((error) => {
+        console.error('Error loading photos from backend:', error);
+        // Return empty array instead of mock data to see real errors
+        return of([]);
+      })
     );
   }
 
   uploadPhoto(eventId: string, file: File): Observable<Photo> {
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(eventId)) {
+      console.error('Invalid event ID format for photo upload:', eventId);
+      return new Observable(observer => {
+        observer.error(new Error('Invalid event ID. Cannot upload photo to a non-existent event.'));
+      });
+    }
+
     const token = this.authService.getToken();
 
     let headers = new HttpHeaders();
@@ -177,26 +220,51 @@ export class EventService {
     formData.append('file', file);
     formData.append('eventId', eventId);
 
+    console.log('Uploading photo for event:', eventId);
+
     return this.http.post<any>(this.photosUrl, formData, { headers }).pipe(
       map((res) => {
+        console.log('Photo upload response:', res);
         const photo: Photo = {
-          id: (res.publicId as string) || Date.now().toString(),
+          id: res.id || res.publicId || Date.now().toString(),
           url: res.url as string,
-          uploaderName: 'You',
-          uploadedAt: 'Just now'
+          uploaderName: res.uploaderName || this.authService.getFullName() || 'You',
+          uploadedAt: this.formatUploadDate(res.uploadedAt) || 'Just now'
         };
         return photo;
       }),
-      catchError(() => {
-        const fallback: Photo = {
-          id: Date.now().toString(),
-          url: URL.createObjectURL(file),
-          uploaderName: 'You',
-          uploadedAt: 'Just now'
-        };
-        return of(fallback);
+      catchError((error) => {
+        console.error('Error uploading photo:', error);
+        // Don't return fallback - let the error propagate so user knows it failed
+        throw error;
       })
     );
+  }
+
+  private formatUploadDate(dateStr: string): string {
+    if (!dateStr) return 'Just now';
+    
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+      if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
   }
 
 }
