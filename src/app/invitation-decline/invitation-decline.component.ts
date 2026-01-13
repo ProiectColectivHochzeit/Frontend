@@ -92,7 +92,6 @@ export class InvitationDeclineComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         this.error = err.error?.error || err.message || 'Failed to decline invitation. Please try again.';
-        console.error('Error declining invitation:', err);
       }
     });
   }

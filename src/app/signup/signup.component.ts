@@ -44,7 +44,6 @@ export class SignupComponent implements OnInit {
           this.router.navigate(['/login']);
         },
         error: (err) => {
-          console.error('Registration error:', err);
         }
       });
     }

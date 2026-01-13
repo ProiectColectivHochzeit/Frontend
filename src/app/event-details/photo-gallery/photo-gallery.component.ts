@@ -127,7 +127,6 @@ export class PhotoGalleryComponent implements OnInit, OnDestroy {
         this.dialogRef.close({ deleted: true, remainingPhotos: this.photos });
       },
       error: (err) => {
-        console.error('Error deleting photo:', err);
         alert('Failed to delete photo: ' + (err.error?.error || err.message || 'Unknown error'));
         this.isDeleting = false;
       }

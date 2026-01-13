@@ -54,7 +54,6 @@ export class EventDetailsComponent implements OnInit {
         // Validate UUID format before making API call
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         if (!uuidRegex.test(this.eventId)) {
-            console.error('Invalid event ID format:', this.eventId);
             alert('Invalid event ID. Please navigate to a valid event.');
             this.isLoading = false;
             return;
@@ -68,7 +67,6 @@ export class EventDetailsComponent implements OnInit {
                 this.loadPhotos();
             },
             error: (err: Error) => {
-                console.error('Error loading event:', err);
                 alert('Event not found. Please check if the event exists.');
                 this.isLoading = false;
             }
@@ -82,7 +80,6 @@ export class EventDetailsComponent implements OnInit {
                 this.isLoading = false;
             },
             error: (err: Error) => {
-                console.error('Error loading participants:', err);
                 this.isLoading = false;
             }
         });
@@ -94,7 +91,6 @@ export class EventDetailsComponent implements OnInit {
                 this.photos = photos;
             },
             error: (err: Error) => {
-                console.error('Error loading photos:', err);
             }
         });
     }
@@ -112,7 +108,6 @@ export class EventDetailsComponent implements OnInit {
                         this.loadParticipants();
                     },
                     error: (err: Error) => {
-                        console.error('Error inviting participant:', err);
                     }
                 });
             }
@@ -125,14 +120,11 @@ export class EventDetailsComponent implements OnInit {
       const file = input.files[0];
       this.eventService.uploadPhoto(this.eventId, file).subscribe({
         next: (newPhoto: Photo) => {
-          console.log('Photo uploaded successfully:', newPhoto);
           this.photos = [newPhoto, ...this.photos];
-          // Reload photos from server to ensure we have the latest data
           this.loadPhotos();
         },
         error: (err: Error) => {
-          console.error('Error uploading photo:', err);
-          alert('Failed to upload photo. Please check the console for details.');
+          alert('Failed to upload photo.');
         }
       });
     }
@@ -201,11 +193,7 @@ export class EventDetailsComponent implements OnInit {
     }
 
     deleteParticipant(participant: Participant): void {
-        console.log('Deleting participant:', participant);
-        console.log('Participant invitationId:', participant.invitationId);
-        
         if (!participant.invitationId) {
-            console.error('Participant object:', participant);
             alert('Cannot delete: Invitation ID not found. Please refresh the page and try again.');
             return;
         }
@@ -219,7 +207,6 @@ export class EventDetailsComponent implements OnInit {
                 this.loadParticipants();
             },
             error: (err: any) => {
-                console.error('Error deleting participant:', err);
                 alert('Failed to delete participant: ' + (err.error?.error || err.message || 'Unknown error'));
             }
         });
@@ -249,7 +236,6 @@ export class EventDetailsComponent implements OnInit {
                     input.value = '';
                 },
                 error: (err: any) => {
-                    console.error('Error importing participants:', err);
                     alert('Failed to import participants: ' + (err.error?.error || err.message || 'Unknown error'));
                     input.value = '';
                 }

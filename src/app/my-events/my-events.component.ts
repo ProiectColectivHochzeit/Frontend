@@ -38,8 +38,6 @@ export class MyEventsComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error loading events:', err);
-
         if (err.status === 404 && err.error?.detail === 'Eventorganizer not found.') {
           this.events = [];
           this.errorMessage = '';

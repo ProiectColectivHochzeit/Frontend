@@ -73,22 +73,15 @@ export class InvitationAcceptComponent implements OnInit {
   ngOnInit(): void {
     this.invitationId = this.route.snapshot.queryParams['invitationId'];
     
-    console.log('Invitation accept component loaded with invitationId:', this.invitationId);
-    console.log('All query params:', this.route.snapshot.queryParams);
-    
     if (!this.invitationId) {
       this.error = 'Invalid invitation link. No invitation ID provided.';
       this.loading = false;
       return;
     }
-    
-    console.log('Invitation ID from URL:', this.invitationId, 'Type:', typeof this.invitationId);
 
-    // Check if user is logged in
     if (!this.authService.getToken()) {
       this.error = 'Please log in to accept the invitation.';
       this.loading = false;
-      // Redirect immediately to login with returnUrl
       this.router.navigate(['/login'], { 
         queryParams: { 
           returnUrl: `/invitation-accept?invitationId=${this.invitationId}`,
@@ -97,13 +90,7 @@ export class InvitationAcceptComponent implements OnInit {
       });
       return;
     }
-    
-    // Log current user info for debugging
-    const currentUserEmail = this.authService.getEmail();
-    const currentUserId = this.authService.getCurrentUserId();
-    console.log('Current logged-in user:', { email: currentUserEmail, userId: currentUserId });
 
-    // Automatically accept the invitation when component loads (user is logged in)
     this.acceptInvitation();
   }
 
@@ -118,11 +105,8 @@ export class InvitationAcceptComponent implements OnInit {
       next: () => {
         this.loading = false;
         this.success = 'Invitation accepted! You have been added to the event. Redirecting to your events...';
-        console.log('Invitation accepted successfully');
-        // Navigate immediately - the my-events component will reload
         setTimeout(() => {
           this.router.navigate(['/my-events']).then(() => {
-            // Force a page reload to ensure events are refreshed
             window.location.reload();
           });
         }, 1500);
@@ -131,10 +115,7 @@ export class InvitationAcceptComponent implements OnInit {
         this.loading = false;
         const errorMessage = err.error || err.message || 'Failed to accept invitation. Please try again.';
         this.error = typeof errorMessage === 'string' ? errorMessage : errorMessage.toString();
-        console.error('Error accepting invitation:', err);
-        console.error('Full error object:', JSON.stringify(err, null, 2));
         
-        // If email mismatch, show logout button
         if (this.error && (this.error.includes('does not match the invitation email') || this.error.includes('email'))) {
           this.showLogoutButton = true;
           this.error = 'You are logged in with a different email than the one that was invited. Please log out and log in with the email that received the invitation.';

@@ -40,7 +40,6 @@ export class CreateEventComponent {
 
     const userId = this.authService.getCurrentUserId();
     if (!userId) {
-      console.error('No logged user ID. Cannot create event.');
       this.router.navigate(['/login']);
       return;
     }
@@ -53,13 +52,9 @@ export class CreateEventComponent {
       organizerId: userId
     };
 
-    console.log('Creating event payload (date-only):', payload);
-
     this.eventService.createEvent(payload).subscribe({
       next: () => this.router.navigate(['/my-events']),
       error: (err) => {
-        console.error('Event creation error:', err);
-        console.error('Server response:', err?.error);
       }
     });
   }

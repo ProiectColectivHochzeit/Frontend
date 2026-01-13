@@ -12,7 +12,6 @@ bootstrapApplication(AppComponent, {
 })
   .then(() => {})
   .catch((err) => {
-    console.error('ERROR bootstrapping Angular:', err);
     document.body.innerHTML = `
       <div style="padding: 50px; background: #ffebee; border: 2px solid #c62828; color: #c62828;">
         <h1>Angular Bootstrap Error</h1>
